@@ -8,7 +8,7 @@ on_player_moved = function(event)
     local distance = (math.max(x, y) * 5 + math.min(x, y) * (2)) / 5
     if distance < 5 then
       --locomotive.speed = 0
-      game.print("Close to " .. train.name, {r = 0.5, g = 0, b = 0, a = 0.5})
+      game.print("Close to " .. locomotive.name, {r = 0.5, g = 0, b = 0, a = 0.5})
     elseif distance > 5 then
       --locomotive.speed = 100
     end
