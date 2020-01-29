@@ -1,4 +1,9 @@
-Version: 0.0.1
+Version: 0.0.2
 Date: 28. 01. 2020
+  Changes:
+    - New Logo
+----------------------
+Version: 0.0.1
+Date: 27. 01. 2020
   Changes:
     - Hello World!
