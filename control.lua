@@ -1,7 +1,7 @@
 on_player_moved = function(event)
   local player = game.players[event.player_index]
-  local locomotive = game.surfaces[1].find_entities_filtered{type = "locomotive"}
-  for i, locomotive in pairs(trains) do
+  local locomotives = game.surfaces[1].find_entities_filtered{type = "locomotive"}
+  for i, locomotive in pairs(locomotives) do
     -- Get chamfer distance - better than Manhattan but cheaper than Euclidean
     local x = math.abs(locomotive.position.x - player.position.x)
     local y = math.abs(locomotive.position.y - player.position.y)
