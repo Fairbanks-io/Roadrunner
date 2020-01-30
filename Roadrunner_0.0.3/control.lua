@@ -1,3 +1,23 @@
+ROADRUNNER_OPTIONS_MAP = {
+  ["nevergonnagive"] = "nevergonnagive",
+  ["none"] = false
+}
+
+NEVERGONNAGIVE = "nevergonnagive"
+
+RR_ENABLED = settings.global["roadrunner-enabled"].value
+RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
+
+-- Wipe cooldown table when config changes, in case of any data leaks
+script.on_configuration_changed(init_global)
+script.on_init(init_global)
+
+-- Detect setting changes during session
+script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
+  RR_ENABLED = settings.global["roadrunner-enabled"].value
+  RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
+end)
+
 on_player_moved = function(event)
   local player = game.players[event.player_index]
   local locomotives = game.surfaces[1].find_entities_filtered{type = "locomotive"}
@@ -15,4 +35,17 @@ on_player_moved = function(event)
   end
 end
 
+player_died = function(event)
+  local player = game.players[event.player_index]
+  player.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
+  if RR_ENABLED then
+    player.play_sound
+    {
+      path = NEVERGONNAGIVE
+      volume_modifier = RR_VOLUME
+    }
+  end
+end
+
 script.on_event(defines.events.on_player_changed_position, on_player_moved)
+script.on_event(defines.events.entity_died, player_died)
