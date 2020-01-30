@@ -36,16 +36,15 @@ on_player_moved = function(event)
 end
 
 player_died = function(event)
-  local player = game.players[event.player_index]
-  player.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
+  game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   if RR_ENABLED then
-    player.play_sound
+    game.play_sound
     {
-      path = NEVERGONNAGIVE
+      path = NEVERGONNAGIVE,
       volume_modifier = RR_VOLUME
     }
   end
 end
 
 script.on_event(defines.events.on_player_changed_position, on_player_moved)
-script.on_event(defines.events.entity_died, player_died)
+script.on_event(defines.events.on_entity_died, player_died)
