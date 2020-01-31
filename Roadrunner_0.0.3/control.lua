@@ -27,36 +27,6 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
 end)
 
-function dump(o)
-  if type(o) == 'table' then
-     local s = '{ '
-     for k,v in pairs(o) do
-        if type(k) ~= 'number' then k = '"'..k..'"' end
-        s = s .. '['..k..'] = ' .. dump(v) .. ','
-     end
-     return s .. '} '
-  else
-     return tostring(o)
-  end
-end
-
--- Print contents of `tbl`, with indentation.
--- `indent` sets the initial level of indentation.
-function tprint (tbl, indent)
-  if not indent then indent = 0 end
-  for k, v in pairs(tbl) do
-    formatting = string.rep("  ", indent) .. k .. ": "
-    if type(v) == "table" then
-      print(formatting)
-      tprint(v, indent+1)
-    elseif type(v) == 'boolean' then
-      print(formatting .. tostring(v))      
-    else
-      print(formatting .. v)
-    end
-  end
-end
-
 function round(num, numDecimalPlaces)
   return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
 end
@@ -94,7 +64,7 @@ on_tick = function(event)
 end
 
 player_died = function(event)
-  tprint(event.cause)
+  print(event.cause)
   game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   if RR_ENABLED then
     game.play_sound
