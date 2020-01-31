@@ -9,6 +9,7 @@ NEVERGONNAGIVE = "nevergonnagive"
 
 RR_ENABLED = settings.global["roadrunner-enabled"].value
 RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
+RR_DISTANCE = settings.global["roadrunner-distance"].value
 
 -- Wipe cooldown table when config changes, in case of any data leaks
 -- the below lines require init_global function defined
@@ -25,6 +26,7 @@ end
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_ENABLED = settings.global["roadrunner-enabled"].value
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
+  RR_DISTANCE = settings.global["roadrunner-distance"].value
 end)
 
 function round(num, numDecimalPlaces)
