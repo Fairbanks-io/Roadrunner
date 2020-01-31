@@ -17,13 +17,13 @@ data:extend({
 	},
 	{
 		type = "int-setting",
-		name = "roadrunner-range",
+		name = "roadrunner-distance",
 		setting_type = "runtime-global",
 		default_value = 5,
     minimum_value = 0,
     maximum_value = 100,
     order = "ac"
-	},
+  },
   {
     type = "string-setting",
     name = "roadrunner-sound-type",

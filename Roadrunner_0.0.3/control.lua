@@ -52,7 +52,7 @@ on_tick = function(event)
             game.print(locomotive.train.id)
             --global.paused[locomotive.train.id] = global.paused[locomotive.train.id] or {}
             --global.paused[locomotive.train.id] = locomotive.train.id
-          elseif distance > 5 then
+          elseif distance > RR_DISTANCE then
             game.print("resuming..")
             locomotive.train.manual_mode = false
           end
