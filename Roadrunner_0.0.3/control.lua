@@ -65,7 +65,6 @@ end
 player_died = function(event)
   game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   local cause = event.cause.name or nil
-  game.print(cause)
   if RR_ENABLED and cause == "locomotive" or "cargo-wagon" then
     game.play_sound
     {
