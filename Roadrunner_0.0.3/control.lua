@@ -1,3 +1,5 @@
+--local Trains = require '__stdlib__/stdlib/event/trains'
+
 ROADRUNNER_OPTIONS_MAP = {
   ["nevergonnagive"] = "nevergonnagive",
   ["none"] = false
@@ -9,8 +11,15 @@ RR_ENABLED = settings.global["roadrunner-enabled"].value
 RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
 
 -- Wipe cooldown table when config changes, in case of any data leaks
+-- the below lines require init_global function defined
+
 script.on_configuration_changed(init_global)
 script.on_init(init_global)
+
+function init_global()
+  global = global or {}
+  global.paused = {}
+end
 
 -- Detect setting changes during session
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
@@ -18,24 +27,74 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
 end)
 
-on_player_moved = function(event)
-  local player = game.players[event.player_index]
-  local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = 10, type = "locomotive"}
-  for i, locomotive in pairs(locomotives) do
-    -- Get chamfer distance - better than Manhattan but cheaper than Euclidean
-    local x = math.abs(locomotive.position.x - player.position.x)
-    local y = math.abs(locomotive.position.y - player.position.y)
-    local distance = (math.max(x, y) * 5 + math.min(x, y) * (2)) / 5
-    if distance < 5 then
-      --locomotive.speed = 0
-      game.print("Close to " .. locomotive.name, {r = 0.5, g = 0, b = 0, a = 0.5})
-    elseif distance > 5 then
-      --locomotive.speed = 100
+function dump(o)
+  if type(o) == 'table' then
+     local s = '{ '
+     for k,v in pairs(o) do
+        if type(k) ~= 'number' then k = '"'..k..'"' end
+        s = s .. '['..k..'] = ' .. dump(v) .. ','
+     end
+     return s .. '} '
+  else
+     return tostring(o)
+  end
+end
+
+-- Print contents of `tbl`, with indentation.
+-- `indent` sets the initial level of indentation.
+function tprint (tbl, indent)
+  if not indent then indent = 0 end
+  for k, v in pairs(tbl) do
+    formatting = string.rep("  ", indent) .. k .. ": "
+    if type(v) == "table" then
+      print(formatting)
+      tprint(v, indent+1)
+    elseif type(v) == 'boolean' then
+      print(formatting .. tostring(v))      
+    else
+      print(formatting .. v)
+    end
+  end
+end
+
+function round(num, numDecimalPlaces)
+  return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
+end
+
+on_tick = function(event)
+  --run every half second (or ever 30 of 60 ticks per second) or 2x per second.
+  if game.tick%30 == 0 then
+    for _, player in pairs(game.players) do 
+      local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = 10, type = "locomotive"}
+      
+      --local movingTrains = Trains.find_filtered({ surface = "nauvis", state = defines.train_state.on_the_path })
+
+      for _, locomotive in pairs(locomotives) do
+        -- check if state of train is moving
+        if locomotive.train.state == defines.train_state.on_the_path then
+          -- Get chamfer distance - better than Manhattan but cheaper than Euclidean
+          local x = math.abs(locomotive.position.x - player.position.x)
+          local y = math.abs(locomotive.position.y - player.position.y)
+          local distance = (math.max(x, y) * 5 + math.min(x, y) * (2)) / 5
+          if distance < 5 then
+            game.print("pausing train")
+            
+            locomotive.train.manual_mode = true
+            locomotive.train.speed = 0
+            game.print(locomotive.train.id)
+            --global.paused[locomotive.train.id] = locomotive.train.id
+          elseif distance > 5 then
+            game.print("resuming..")
+            locomotive.train.manual_mode = false
+          end
+        end
+      end
     end
   end
 end
 
 player_died = function(event)
+  tprint(event.cause)
   game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   if RR_ENABLED then
     game.play_sound
@@ -46,5 +105,5 @@ player_died = function(event)
   end
 end
 
-script.on_event(defines.events.on_player_changed_position, on_player_moved)
+script.on_event(defines.events.on_tick, on_tick)
 script.on_event(defines.events.on_entity_died, player_died)
