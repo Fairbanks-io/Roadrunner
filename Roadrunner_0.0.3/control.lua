@@ -52,6 +52,7 @@ on_tick = function(event)
             locomotive.train.manual_mode = true
             locomotive.train.speed = 0
             game.print(locomotive.train.id)
+            --global.paused[locomotive.train.id] = global.paused[locomotive.train.id] or {}
             --global.paused[locomotive.train.id] = locomotive.train.id
           elseif distance > 5 then
             game.print("resuming..")
@@ -64,9 +65,10 @@ on_tick = function(event)
 end
 
 player_died = function(event)
-  print(event.cause)
   game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
-  if RR_ENABLED then
+  local cause = event.cause.name or nil
+  game.print(cause)
+  if RR_ENABLED and cause == "locomotive" or "cargo-wagon" then
     game.play_sound
     {
       path = NEVERGONNAGIVE,
