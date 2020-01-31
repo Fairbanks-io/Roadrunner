@@ -14,13 +14,13 @@ RR_DISTANCE = settings.global["roadrunner-distance"].value
 -- Wipe cooldown table when config changes, in case of any data leaks
 -- the below lines require init_global function defined
 
-script.on_configuration_changed(init_global)
-script.on_init(init_global)
-
-function init_global()
+local function init_global()
   global = global or {}
   global.paused = {}
 end
+
+script.on_configuration_changed(init_global)
+script.on_init(init_global)
 
 -- Detect setting changes during session
 script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
@@ -28,10 +28,6 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
   RR_DISTANCE = settings.global["roadrunner-distance"].value
 end)
-
-function round(num, numDecimalPlaces)
-  return tonumber(string.format("%." .. (numDecimalPlaces or 0) .. "f", num))
-end
 
 on_tick = function(event)
   --run every half second (or ever 30 of 60 ticks per second) or 2x per second.
