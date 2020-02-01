@@ -10,6 +10,7 @@ NEVERGONNAGIVE = "nevergonnagive"
 RR_ENABLED = settings.global["roadrunner-enabled"].value
 RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
 RR_DISTANCE = settings.global["roadrunner-distance"].value
+RR_MOTD = settings.global["roadrunner-motd"].value
 
 local function init_global()
   global = global or {}
@@ -26,6 +27,7 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
   RR_DISTANCE = settings.global["roadrunner-distance"].value
   RR_CHANCE = settings.global["roadrunner-chance"].value
+  RR_MOTD = settings.global["roadrunner-motd"].value
 end)
 
 maybe = function(percent)
@@ -81,7 +83,6 @@ on_tick = function(event)
 end
 
 player_died = function(event)
-  game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   local cause = nil
   -- Check cause of death
   if event and event.cause then
@@ -89,6 +90,7 @@ player_died = function(event)
   end
   game.print(cause)
   if RR_ENABLED and cause == "locomotive" or cause == "cargo-wagon" then
+    game.print(RR_MOTD, {r = 0.5, g = 0, b = 0, a = 0.5})
     game.play_sound({ path = NEVERGONNAGIVE, volume_modifier = RR_VOLUME })
   end
 end

@@ -40,5 +40,12 @@ data:extend({
     default_value = "roadrunner-nggyu",
     allowed_values = {"roadrunner-nggyu", "none"},
     order = "ba"
+  },
+  {
+    type = "string-setting",
+    name = "roadrunner-motd",
+    setting_type = "runtime-global",
+    default_value = "Epstein didn't kill himself",
+    order = "bb"
   }
 })
