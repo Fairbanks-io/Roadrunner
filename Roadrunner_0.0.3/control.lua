@@ -36,47 +36,76 @@ maybe = function(percent)
 end
 
 on_tick = function(event)
-  -- Run every 10 of 60 ticks per second, or 6x per second.
+
+  -- Run every 30 of 60 ticks per second, or 6x per second.
   if game.tick%30 == 0 then
-    if (not global.pausedTrains) then global.pausedTrains = {} end
-    
-    for _, player in pairs(game.players) do 
-      -- Unpause any previously paused trains if they are outside radius of players    
-      for _, pausedTrain in pairs(global.pausedTrains) do
-        if pausedTrain ~= nil then
-          local x = math.abs(pausedTrain.locomotives.front_movers[1].position.x - player.position.x)
-          local y = math.abs(pausedTrain.locomotives.front_movers[1].position.y - player.position.y)
-          local distance = (math.max(x, y) * 5 + math.min(x, y) * (2)) / 5
-          --game.print("distance of paused train: " .. distance)
-          if distance > RR_DISTANCE + 5 then
-            pausedTrain.manual_mode = false
-            global.pausedTrains[pausedTrain.id] = nil
+
+    -- ##########################################
+    -- UN PAUSE TRAINS AFTER CHECKING OUT OF RANGE OF ALL PLAYERS
+    -- ##########################################
+
+    -- Iterate global definition of paused trains
+    for _, pausedTrain in pairs(global.pausedTrains) do
+
+      -- Make sure pausedTrain has data
+      if pausedTrain ~= nil then
+        
+        -- Assume train should be resumed
+        local shouldResume = true
+
+        -- Iterate through each player and make sure they're connected
+        for _, player in pairs(game.players) do
+          if player.connected == true then
+
+            -- Iterate all locomotives within range of each player
+            local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = {"locomotive", "cargo-wagon"}}
+            for _, locomotive in pairs(locomotives) do 
+
+              -- If train is still within range for any player.. do not resume
+              if locomotive.train.id == pausedTrain.id then shouldResume = false end
+
+            end
           end
         end
-      end
 
-      -- Get all locomotives within range of player
-      local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = "locomotive"}
+        -- If locomotive of paused train was not found within range of any player, resume it.
+        if shouldResume == true then
 
-      -- Iterate each train within range
-      for _, locomotive in pairs(locomotives) do
-
-        -- Automated and moving we turn off automated and set speed to zero
-        --if locomotive.train.state ~= defines.train_state.manual_control and locomotive.train.speed > 0 then
-        if locomotive.train.state ~= defines.train_state.manual_control then
-
-          --game.print("Pausing train as its too close and moving with speed of: " .. locomotive.train.speed)
-          locomotive.train.speed = 0
-          locomotive.train.manual_mode = true
-          
-          --game.print(locomotive.train.id)
-
-          -- Add train to list of paused trains
-          if (not global.pausedTrains[locomotive.train.id]) then global.pausedTrains[locomotive.train.id] = {} end
-          global.pausedTrains[locomotive.train.id] = locomotive.train
-      
+          -- Resume and remove from paused trains array
+          pausedTrain.manual_mode = false
+          global.pausedTrains[pausedTrain.id] = nil
         end
+      end
+    end
 
+
+    -- ##########################################
+    -- PAUSE TRAINS WITHIN RANGE OF ANY PLAYER
+    -- ##########################################
+
+    -- Get each player in game.players and make sure they're online.
+    for _, player in pairs(game.players) do 
+      if player.connected == true then 
+
+        -- Get all locomotives within range of player 
+        local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = {"locomotive", "cargo-wagon"}}
+
+        for _, locomotive in pairs(locomotives) do
+
+          -- Check if train is in automatic mode (todo: And speed > 0)
+          if locomotive.train.state ~= defines.train_state.manual_control then
+
+            -- Set speed to zero FIRST, then set to manual mode
+            locomotive.train.speed = 0
+            locomotive.train.manual_mode = true
+
+            -- Add train to list of paused trains
+            if (not global.pausedTrains[locomotive.train.id]) then global.pausedTrains[locomotive.train.id] = {} end
+            global.pausedTrains[locomotive.train.id] = locomotive.train
+        
+          end
+
+        end
       end
     end
   end
