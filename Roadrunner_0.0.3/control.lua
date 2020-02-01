@@ -11,14 +11,12 @@ RR_ENABLED = settings.global["roadrunner-enabled"].value
 RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
 RR_DISTANCE = settings.global["roadrunner-distance"].value
 
--- Wipe cooldown table when config changes, in case of any data leaks
--- the below lines require init_global function defined
-
 local function init_global()
   global = global or {}
   global.paused = {}
 end
 
+-- Wipe cooldown table when config changes, in case of any data leaks
 script.on_configuration_changed(init_global)
 script.on_init(init_global)
 
@@ -36,15 +34,12 @@ maybe = function(percent)
 end
 
 on_tick = function(event)
-  --run every 10 of 60 ticks per second, or 6x per second.
+  -- Run every 10 of 60 ticks per second, or 6x per second.
   if game.tick%30 == 0 then
     if (not global.pausedTrains) then global.pausedTrains = {} end
     
     for _, player in pairs(game.players) do 
-
-      -- unpause any previously paused trains if they are outside radius of players
-
-      
+      -- Unpause any previously paused trains if they are outside radius of players    
       for _, pausedTrain in pairs(global.pausedTrains) do
         if pausedTrain ~= nil then
           local x = math.abs(pausedTrain.locomotives.front_movers[1].position.x - player.position.x)
@@ -58,13 +53,13 @@ on_tick = function(event)
         end
       end
 
-      -- get all locomotives within range of player
+      -- Get all locomotives within range of player
       local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = "locomotive"}
 
-      -- iterate each train within range
+      -- Iterate each train within range
       for _, locomotive in pairs(locomotives) do
 
-        -- automated and moving we turn of automated, set speed to zero
+        -- Automated and moving we turn off automated and set speed to zero
         --if locomotive.train.state ~= defines.train_state.manual_control and locomotive.train.speed > 0 then
         if locomotive.train.state ~= defines.train_state.manual_control then
 
@@ -74,7 +69,7 @@ on_tick = function(event)
           
           --game.print(locomotive.train.id)
 
-          -- add train to list of paused trains
+          -- Add train to list of paused trains
           if (not global.pausedTrains[locomotive.train.id]) then global.pausedTrains[locomotive.train.id] = {} end
           global.pausedTrains[locomotive.train.id] = locomotive.train
       
@@ -88,6 +83,7 @@ end
 player_died = function(event)
   game.print("Epstein didn't kill himself", {r = 0.5, g = 0, b = 0, a = 0.5})
   local cause = nil
+  -- Check cause of death
   if event and event.cause then
     cause = event.cause.name
   end
