@@ -27,7 +27,13 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_ENABLED = settings.global["roadrunner-enabled"].value
   RR_VOLUME = settings.global["roadrunner-volume"].value * 0.01
   RR_DISTANCE = settings.global["roadrunner-distance"].value
+  RR_CHANCE = settings.global["roadrunner-chance"].value
 end)
+
+maybe = function(percent)
+  assert(percent >= 0 and percent <= 100)
+  return percent >= math.random(1, 100)
+end
 
 on_tick = function(event)
   --run every half second (or ever 30 of 60 ticks per second) or 2x per second.
