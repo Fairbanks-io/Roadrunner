@@ -36,33 +36,50 @@ maybe = function(percent)
 end
 
 on_tick = function(event)
-  --run every half second (or ever 30 of 60 ticks per second) or 2x per second.
+  --run every 10 of 60 ticks per second, or 6x per second.
   if game.tick%30 == 0 then
+    if (not global.pausedTrains) then global.pausedTrains = {} end
+    
     for _, player in pairs(game.players) do 
-      local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = 10, type = "locomotive"}
-      
-      --local movingTrains = Trains.find_filtered({ surface = "nauvis", state = defines.train_state.on_the_path })
 
-      for _, locomotive in pairs(locomotives) do
-        -- check if state of train is moving
-        if locomotive.train.state == defines.train_state.on_the_path then
-          -- Get chamfer distance - better than Manhattan but cheaper than Euclidean
-          local x = math.abs(locomotive.position.x - player.position.x)
-          local y = math.abs(locomotive.position.y - player.position.y)
+      -- unpause any previously paused trains if they are outside radius of players
+
+      
+      for _, pausedTrain in pairs(global.pausedTrains) do
+        if pausedTrain ~= nil then
+          local x = math.abs(pausedTrain.locomotives.front_movers[1].position.x - player.position.x)
+          local y = math.abs(pausedTrain.locomotives.front_movers[1].position.y - player.position.y)
           local distance = (math.max(x, y) * 5 + math.min(x, y) * (2)) / 5
-          if distance < 5 then
-            game.print("pausing train")
-            
-            locomotive.train.manual_mode = true
-            locomotive.train.speed = 0
-            game.print(locomotive.train.id)
-            --global.paused[locomotive.train.id] = global.paused[locomotive.train.id] or {}
-            --global.paused[locomotive.train.id] = locomotive.train.id
-          elseif distance > RR_DISTANCE then
-            game.print("resuming..")
-            locomotive.train.manual_mode = false
+          --game.print("distance of paused train: " .. distance)
+          if distance > RR_DISTANCE + 5 then
+            pausedTrain.manual_mode = false
+            global.pausedTrains[pausedTrain.id] = nil
           end
         end
+      end
+
+      -- get all locomotives within range of player
+      local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = "locomotive"}
+
+      -- iterate each train within range
+      for _, locomotive in pairs(locomotives) do
+
+        -- automated and moving we turn of automated, set speed to zero
+        --if locomotive.train.state ~= defines.train_state.manual_control and locomotive.train.speed > 0 then
+        if locomotive.train.state ~= defines.train_state.manual_control then
+
+          --game.print("Pausing train as its too close and moving with speed of: " .. locomotive.train.speed)
+          locomotive.train.speed = 0
+          locomotive.train.manual_mode = true
+          
+          --game.print(locomotive.train.id)
+
+          -- add train to list of paused trains
+          if (not global.pausedTrains[locomotive.train.id]) then global.pausedTrains[locomotive.train.id] = {} end
+          global.pausedTrains[locomotive.train.id] = locomotive.train
+      
+        end
+
       end
     end
   end
