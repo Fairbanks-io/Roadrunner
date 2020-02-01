@@ -25,11 +25,20 @@ data:extend({
     order = "ac"
   },
   {
+		type = "int-setting",
+		name = "roadrunner-chance",
+		setting_type = "runtime-global",
+		default_value = 75,
+    minimum_value = 0,
+    maximum_value = 100,
+    order = "ad"
+  },
+  {
     type = "string-setting",
     name = "roadrunner-sound-type",
     setting_type = "runtime-global",
-    default_value = "roadrunner-single",
-    allowed_values = {"roadrunner-single", "none"},
+    default_value = "roadrunner-nggyu",
+    allowed_values = {"roadrunner-nggyu", "none"},
     order = "ba"
   }
 })
