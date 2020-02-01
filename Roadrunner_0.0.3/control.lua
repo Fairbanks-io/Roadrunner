@@ -94,7 +94,9 @@ on_tick = function(event)
 
           -- Check if train is in automatic mode (todo: And speed > 0)
           if locomotive.train.state ~= defines.train_state.manual_control then
-
+            -- Play brake sounds
+            game.play_sound({ path = "stopping", volume_modifier = RR_VOLUME })
+            
             -- Set speed to zero FIRST, then set to manual mode
             locomotive.train.speed = 0
             locomotive.train.manual_mode = true
