@@ -89,11 +89,7 @@ player_died = function(event)
   end
   game.print(cause)
   if RR_ENABLED and cause == "locomotive" or cause == "cargo-wagon" then
-    game.play_sound
-    {
-      path = NEVERGONNAGIVE,
-      volume_modifier = RR_VOLUME
-    }
+    game.play_sound({ path = NEVERGONNAGIVE, volume_modifier = RR_VOLUME })
   end
 end
 
