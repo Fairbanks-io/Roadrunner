@@ -10,7 +10,7 @@ data:extend({
 		type = "int-setting",
 		name = "roadrunner-volume",
 		setting_type = "runtime-global",
-		default_value = 100,
+		default_value = 50,
     minimum_value = 0,
     maximum_value = 100,
     order = "ab"
