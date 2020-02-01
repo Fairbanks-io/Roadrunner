@@ -30,7 +30,6 @@ script.on_event(defines.events.on_runtime_mod_setting_changed, function(event)
   RR_CHANCE = settings.global["roadrunner-chance"].value
 end)
 
-math.randomseed(os.time())
 maybe = function(percent)
   assert(percent >= 0 and percent <= 100)
   return percent >= math.random(1, 100)
