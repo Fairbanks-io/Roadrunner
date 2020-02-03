@@ -36,7 +36,6 @@ maybe = function(percent)
 end
 
 on_tick = function(event)
-
   -- Run every 30 of 60 ticks per second, or 6x per second.
   if game.tick%30 == 0 then
 
@@ -93,10 +92,7 @@ on_tick = function(event)
         for _, locomotive in pairs(locomotives) do
 
           -- Check if train is in automatic mode (todo: And speed > 0)
-          if locomotive.train.state ~= defines.train_state.manual_control then
-            -- Play brake sounds
-            game.play_sound({ path = "stopping", volume_modifier = RR_VOLUME })
-            
+          if locomotive.train.state ~= defines.train_state.manual_control then          
             -- Set speed to zero FIRST, then set to manual mode
             locomotive.train.speed = 0
             locomotive.train.manual_mode = true
@@ -113,18 +109,23 @@ on_tick = function(event)
   end
 end
 
+-- ####################################################
+-- IF PLAYER STILL MANAGES TO DIE, CONGRATULATE THEM
+-- ####################################################
+
 player_died = function(event)
   local cause = nil
   -- Check cause of death
   if event and event.cause then
     cause = event.cause.name
   end
-  game.print(cause)
   if RR_ENABLED and cause == "locomotive" or cause == "cargo-wagon" then
     game.print(RR_MOTD, {r = 0.5, g = 0, b = 0, a = 0.5})
     game.play_sound({ path = NEVERGONNAGIVE, volume_modifier = RR_VOLUME })
   end
 end
 
+-- Watch for tick events
 script.on_event(defines.events.on_tick, on_tick)
+-- Watch for death events
 script.on_event(defines.events.on_entity_died, player_died)
