@@ -1,7 +1,7 @@
 on:
   push:
-    branches:
-    - master
+    branches: master
+    types: [closed]
 name: Check & Release
 jobs:
   release-github:
