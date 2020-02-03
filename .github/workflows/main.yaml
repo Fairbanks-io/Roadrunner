@@ -6,7 +6,6 @@ name: Check & Release
 jobs:
   release-github:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Create Factorio mod package
         uses: Roang-zero1/factorio-mod-package@master
@@ -24,7 +23,6 @@ jobs:
           args: dist/
   release-modportal:
     runs-on: ubuntu-latest
-    needs: [lint]
     steps:
       - name: Create Factorio mod package
         uses: Roang-zero1/factorio-mod-package@master
