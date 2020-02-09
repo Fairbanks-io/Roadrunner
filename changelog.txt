@@ -1,3 +1,11 @@
+Version: 0.0.4
+Date: 08. 02. 2020
+  Changes:
+    - Improved Player Detection
+    - Handling for Death Events
+    - Settings Support
+    - Bug Fixes
+---------------------------------------------------------------------------------------------------
 Version: 0.0.3
 Date: 28. 01. 2020
   Changes:
