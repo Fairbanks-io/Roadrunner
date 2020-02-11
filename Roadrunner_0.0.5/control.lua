@@ -44,39 +44,40 @@ on_tick = function(event)
     -- ##########################################
 
     -- Iterate global definition of paused trains
-    for _, pausedTrain in pairs(global.pausedTrains) do
+    if global.pausedTrains ~= nil
+      for _, pausedTrain in pairs(global.pausedTrains) do
 
-      -- Make sure pausedTrain has data
-      if pausedTrain ~= nil then
-        
-        -- Assume train should be resumed
-        local shouldResume = true
+        -- Make sure pausedTrain has data
+        if pausedTrain ~= nil then
+          
+          -- Assume train should be resumed
+          local shouldResume = true
 
-        -- Iterate through each player and make sure they're connected
-        for _, player in pairs(game.players) do
-          if player.connected == true then
+          -- Iterate through each player and make sure they're connected
+          for _, player in pairs(game.players) do
+            if player.connected == true then
 
-            -- Iterate all locomotives within range of each player
-            local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = {"locomotive", "cargo-wagon"}}
-            for _, locomotive in pairs(locomotives) do 
+              -- Iterate all locomotives within range of each player
+              local locomotives = game.surfaces[1].find_entities_filtered{position = {player.position.x, player.position.y}, radius = RR_DISTANCE, type = {"locomotive", "cargo-wagon"}}
+              for _, locomotive in pairs(locomotives) do 
 
-              -- If train is still within range for any player.. do not resume
-              if locomotive.train.id == pausedTrain.id then shouldResume = false end
+                -- If train is still within range for any player.. do not resume
+                if locomotive.train.id == pausedTrain.id then shouldResume = false end
 
+              end
             end
           end
-        end
 
-        -- If locomotive of paused train was not found within range of any player, resume it.
-        if shouldResume == true then
+          -- If locomotive of paused train was not found within range of any player, resume it.
+          if shouldResume == true then
 
-          -- Resume and remove from paused trains array
-          pausedTrain.manual_mode = false
-          global.pausedTrains[pausedTrain.id] = nil
+            -- Resume and remove from paused trains array
+            pausedTrain.manual_mode = false
+            global.pausedTrains[pausedTrain.id] = nil
+          end
         end
       end
     end
-
 
     -- ##########################################
     -- PAUSE TRAINS WITHIN RANGE OF ANY PLAYER
