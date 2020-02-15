@@ -44,7 +44,7 @@ on_tick = function(event)
     -- ##########################################
 
     -- Iterate global definition of paused trains
-    if global.pausedTrains ~= nil
+    if global.pausedTrains ~= nil then
       for _, pausedTrain in pairs(global.pausedTrains) do
 
         -- Make sure pausedTrain has data
