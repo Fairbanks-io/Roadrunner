@@ -99,8 +99,11 @@ on_tick = function(event)
             locomotive.train.manual_mode = true
 
             -- Add train to list of paused trains
+            if global.pausedTrains == nil then global.pausedTrains = {} end
+            
             if (not global.pausedTrains[locomotive.train.id]) then global.pausedTrains[locomotive.train.id] = {} end
             global.pausedTrains[locomotive.train.id] = locomotive.train
+
         
           end
 
